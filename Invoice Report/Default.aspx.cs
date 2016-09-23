@@ -6,6 +6,7 @@ using System.Web.UI;
 using System.Web.UI.WebControls;
 using Microsoft.Reporting.WebForms;
 using System.Data;
+using BusinessObjects;
 
 namespace Invoice_Report
 {
@@ -16,9 +17,9 @@ namespace Invoice_Report
 
         }
 
-        private void RenderReport(ReportViewer reportViewer, 
-                                  string filename, 
-                                  string datasetName, 
+        private void RenderReport(ReportViewer reportViewer,
+                                  string filename,
+                                  string datasetName,
                                   string reportName,
                                   DataTable dt)
         {
@@ -48,11 +49,11 @@ namespace Invoice_Report
 
             //Render
             renderedBytes = reportViewer.LocalReport.Render(
-                reportType, deviceInfo, 
-                out mimeType, 
-                out encoding, 
-                out fileNameExtension, 
-                out streams, 
+                reportType, deviceInfo,
+                out mimeType,
+                out encoding,
+                out fileNameExtension,
+                out streams,
                 out warnings);
 
             Response.Clear();
@@ -60,6 +61,37 @@ namespace Invoice_Report
             Response.AddHeader("content-attachment", "attachment; filename =" + filename + "." + fileNameExtension);
             Response.BinaryWrite(renderedBytes);
             Response.End();
+        }
+
+        protected void btnShowReport_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                OrderDetailList orderDetails = new OrderDetailList();
+                int intOrderId = Convert.ToInt32(txtOrderId.Text);
+                orderDetails = orderDetails.GetByOrderId(intOrderId);
+                dsInvoice ds = new dsInvoice();
+                foreach(OrderDetail od in orderDetails.List)
+                {
+                    DataRow drOrderDetail = ds.dtInvoice.NewRow();
+                    drOrderDetail["OrderId"] = od.OrderID;
+                    drOrderDetail["ProductName"] = od.ProductName;
+                    drOrderDetail["UnitPrice"] = od.UnitPrice;
+                    drOrderDetail["Quantity"] = od.Quantity;
+                    drOrderDetail["SubTotal"] = od.SubTotal;
+                    drOrderDetail["DiscountSubtotal"] = od.DiscountSubTotal;
+                    drOrderDetail["Discount"] = od.Discount;
+                    ds.dtInvoice.Rows.Add(drOrderDetail);
+
+                }
+                RenderReport(rvInvoice, "Invoice", "dsOrderDetails", "Invoice.rdlc", ds.dtInvoice);
+            }
+
+            catch (Exception ex)
+            {
+                //add a label
+
+            }
         }
     }
 }

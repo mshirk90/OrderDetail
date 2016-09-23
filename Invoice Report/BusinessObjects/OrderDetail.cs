@@ -16,7 +16,7 @@ namespace BusinessObjects
         private int _Quantity = 0;
         private decimal _SubTotal = 0;
         private decimal _DiscountSubTotal = 0;
-        private decimal _Discount = 0;
+        private Single _Discount = 0;
         #endregion
 
         #region Public Properties
@@ -50,8 +50,7 @@ namespace BusinessObjects
             get { return _DiscountSubTotal; }
             set { _DiscountSubTotal = value; }
         }
-
-        public Decimal Discount
+        public Single Discount
         {
             get { return _Discount; }
             set { _Discount = value; }
@@ -73,7 +72,7 @@ namespace BusinessObjects
             _UnitPrice        = (decimal)dr["UnitPrice"];
             _SubTotal         = (decimal)dr["Subtotal"];
             _DiscountSubTotal = (decimal)dr["DiscountSubTotal"];
-            _Discount         = (decimal)dr["Discount"];
+            _Discount         = (Single)dr["Discount"];
         }
 
         #endregion
